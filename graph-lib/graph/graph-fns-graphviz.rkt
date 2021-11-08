@@ -11,12 +11,12 @@
 (define (sanatize-name name)
   (cond
     [(string? name) (with-output-to-string
-                        (λ () (write name)))]
+                      (λ () (write name)))]
     [(symbol? name) (sanatize-name (symbol->string name))]
     [(number? name) (sanatize-name (number->string name))]
     [else (sanatize-name
            (with-output-to-string
-               (λ () (pretty-print name))))]))
+             (λ () (pretty-print name))))]))
 
 ;; Return a graphviz definition for a graph
 ;; Parameters:
@@ -43,7 +43,7 @@
                   #:dirs [dirs #f]
                   #:indent [indent "\t"])
   (define node-count 0)
-      (define node-id-table (make-hash))
+  (define node-id-table (make-hash))
   (define (node-id-table-ref! node)
     (hash-ref! node-id-table node
                (λ ()
@@ -70,7 +70,7 @@
     (when dir (printf " [dir=~a]" dir))
 
     (printf ";\n"))
-            
+
   (define (generate-graph)
     (parameterize ([current-output-port (or port (current-output-port))])
       (printf "digraph G {\n")
@@ -119,22 +119,22 @@
          (printf "\tsubgraph U {\n")
          (printf "\t\tedge [dir=none];\n")
          (define undirected-edges
-           (for/fold ([added (set)]) 
+           (for/fold ([added (set)])
                      ([e (in-edges g)]
                       #:when (and (not (set-member? added e))
                                   (has-edge? g (second e) (first e))
                                   (equal? (edge-weight g (first e) (second e))
-                                       (edge-weight g (second e) (first e)))))
+                                          (edge-weight g (second e) (first e)))))
              (print-edge e #:indent (string-append indent indent))
              (set-add (set-add added e) (list (second e) (first e)))))
          (printf "\t}\n")
-        
+
          ; Write directed edges as another subgraph
          (printf "\tsubgraph D {\n")
          (for ([e (in-edges g)] #:unless (set-member? undirected-edges e))
            (print-edge e #:indent (string-append indent indent)))
          (printf "\t}\n")])
-      
+
       (printf "}\n")))
 
   (if port
